@@ -1,8 +1,3 @@
-const mongoose = require('mongoose');
-const moment = require('moment');
-
-const TimeEntry = mongoose.model('TimeEntry');
-
 /**
  * exposes a ping endpoint and respones with pong
  *
@@ -17,39 +12,32 @@ exports.ping = (req, res) => {
 /*
  * test and experiment endpoint
  *
- * curl -X GET http://localhost:30000/experiment
+ * curl -X GET http://localhost:30000/api/experiment
  */
 exports.experiment = (req, res) => {
-  let entriesFromDate = [];
-  const firstDates = [];
-  let actualDate;
+  var mail = require('mail').Mail({
+    host: 'smtp.strato.de',
+    username: 'gernot@die-reichels.de',
+    password: 'schernoo',
+    secure: 'false',
+    port: '25'
+  });
 
-  TimeEntry.find().sort({ entry_date: 1 })
-    .catch(err => res.send(err))
-    .then((timeentries) => {
-      timeentries.forEach((timeEntry) => {
-        const myDate = moment(timeEntry.entry_date).format('YYYY-MM-DD');
-        if (!actualDate) {
-          actualDate = myDate;
-        }
-        if (actualDate == myDate && timeEntry.direction == 'enter') {
-          entriesFromDate.push(timeEntry);
-        } else {
-          firstDates.push(entriesFromDate.reduce((mapped, value) => {
-            const m = moment(mapped.entry_date).format('HH:mm');
-            const v = moment(value.entry_date).format('HH:mm');
-            // console.log(m + ' ' + v + ' -> ' + (m>v));
-            if (m < v) {
-              return mapped;
-            }
-            return value;
-          }));
-          entriesFromDate = [];
-          actualDate = undefined;
-        }
-        console.log(firstDates.length);
-      });
-      console.log(firstDates);
-      res.send('Minimum:\n');
+  console.log(JSON.stringify(mail));
+  mail.message({
+      from: 'gernot@die-reichels.de',
+      to: ['schernoo@gmail.com'],
+      subject: 'Hello from Node.JS'
+    })
+    .body('Node speaks SMTP!')
+    .send(function(err) {
+      if (err) {
+        console.log((err));
+        res.status(500).send(err.message);
+      } else {
+        console.log('Sent!');
+        res.status(200).send('done:\n');
+      }
     });
+
 };
