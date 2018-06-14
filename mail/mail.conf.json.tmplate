@@ -1,0 +1,14 @@
+{
+    "transport": {
+        "host": "smtp.mail.com",
+        "port": 465,
+        "auth": {
+            "user": "mail-user",
+            "pass": "secret"
+        }
+    },
+    "route": {
+        "from": "Albert Einstein <albert.einstein@me.com>",
+        "to": "Albert Einstein <albert.einstein@me.com>"
+    }
+}

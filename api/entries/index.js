@@ -1,4 +1,5 @@
 const util = require('./util-entries');
+const mail = require('../../mail');
 
 // const DEFAULT_BREAK_TIME = 45 * 60 * 1000; // 45 min in milli seconds
 
@@ -154,7 +155,8 @@ exports.geofence = (req, res) => {
     };
 
     util.create(timeEntry)
-      .then(timeentry => res.status(200).send(timeentry))
+      .then(timeentry => mail.sendMail('Successfully created an entry with Direction ' + direction))
+      .then(res.status(200).send(timeentry))
       .catch(err => res.status(500).send(`Error while createing a new Time Entry: ${err.message}`));
 
   } else {
